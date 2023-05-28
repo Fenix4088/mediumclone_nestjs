@@ -7,6 +7,8 @@ const config: ConnectionOptions = {
   username: 'postgres',
   password: '4088',
   database: 'mediumclone',
+  entities: [__dirname + '/**/*.entity{.ts,.js}'],
+  synchronize: true,
 };
 
 export default config;

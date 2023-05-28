@@ -5,7 +5,6 @@ import { TagModule } from './tag/tag.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import ormconfig from '@app/ormconfig';
 
-console.log(ormconfig);
 @Module({
   imports: [TypeOrmModule.forRoot(ormconfig), TagModule],
   controllers: [AppController],
