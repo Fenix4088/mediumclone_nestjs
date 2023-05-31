@@ -20,15 +20,16 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "typeorm-ts-node-commonjs",
     "db:drop": "yarn typeorm schema:drop -- -d src/datasource.ts",
-    "db:generate": "yarn typeorm migration:generate src/migrations/CreateTags -d src/datasource.ts",
+    "db:generate": "yarn typeorm migration:generate src/migrations/CreateUsers -d src/datasource.ts",
     "db:migrate": "yarn typeorm migration:run -- -d src/datasource.ts",
-    "db:create": "yarn typeorm migration:create src/migrations/CreateTags"
+    "db:create": "yarn typeorm migration:create src/migrations/CreateUsers"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
     "@nestjs/core": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/typeorm": "^9.0.1",
+    "bcrypt": "^5.1.0",
     "module-alias": "^2.2.2",
     "pg": "^8.11.0",
     "reflect-metadata": "^0.1.13",
