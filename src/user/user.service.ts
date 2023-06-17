@@ -1,3 +1,4 @@
+import { LoginUserDto } from './dto/loginUser.dto';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from '@app/user/dto/createUser.dto';
 import { UserEntity } from '@app/user/user.entity';
@@ -6,12 +7,14 @@ import { Repository } from 'typeorm';
 import { sign } from 'jsonwebtoken';
 import { JWT_SECRET } from '@app/config';
 import { UserResponseInterface } from '@app/user/types/userResponse.interface';
-import { log } from 'console';
+import { compare } from 'bcrypt';
+import { UtilsProvider } from '@app/utils/utils.provider';
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    private readonly utilsProvider: UtilsProvider,
   ) {}
   async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
     //check is user with suck email OR username exists
@@ -36,6 +39,38 @@ export class UserService {
     const newUser = new UserEntity();
     Object.assign(newUser, createUserDto);
     return await this.userRepository.save(newUser);
+  }
+
+  async loginUser(loginUserDto: LoginUserDto): Promise<UserEntity> {
+    const { email, password } = loginUserDto;
+    const user = await this.userRepository.findOne({
+      where: {
+        email,
+      },
+      select: ['email', 'username', 'image', 'id', 'bio', 'password'],
+    });
+
+    if (!user) {
+      throw new HttpException('User does not excist', HttpStatus.NOT_FOUND);
+    }
+
+    const isPasswordCorrect = await compare(password, user.password);
+
+    if (!isPasswordCorrect) {
+      throw new HttpException('Wrong password', HttpStatus.FORBIDDEN);
+    }
+
+    return this.utilsProvider.excludeObjectOptions<UserEntity>(user, [
+      'password',
+    ]);
+  }
+
+  findById(id: number): Promise<UserEntity> {
+    return this.userRepository.findOne({
+      where: {
+        id,
+      },
+    });
   }
 
   generateJwt({ id, username, email }: UserEntity): string {
