@@ -52,12 +52,12 @@ export class UserController {
   }
 
   @Put()
-  @UsePipes(new ValidationPipe())
   @UseGuards(AuthGuard)
+  @UsePipes(new ValidationPipe())
   async updateUser(
-    @User() user: UserEntity,
+    @User('id') userId: number,
     @Body('user') updateUserDto: UpdateUserDto,
   ) {
-    return await this.userService.updateUser(user.id, updateUserDto);
+    return await this.userService.updateUser(userId, updateUserDto);
   }
 }
