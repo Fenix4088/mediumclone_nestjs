@@ -9,6 +9,7 @@ import { JWT_SECRET } from '@app/config';
 import { UserResponseInterface } from '@app/user/types/userResponse.interface';
 import { compare } from 'bcrypt';
 import { UtilsProvider } from '@app/utils/utils.provider';
+import { UpdateUserDto } from '@app/user/dto/updateUser.dto';
 @Injectable()
 export class UserService {
   constructor(
@@ -63,6 +64,13 @@ export class UserService {
     return this.utilsProvider.excludeObjectOptions<UserEntity>(user, [
       'password',
     ]);
+  }
+
+  async updateUser(
+    id: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserEntity> {
+    return this.userRepository.save({ id, ...updateUserDto });
   }
 
   findById(id: number): Promise<UserEntity> {
