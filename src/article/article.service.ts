@@ -7,6 +7,7 @@ import { CreateArticleDto } from '@app/article/dto/createArticle.dto';
 import { ArticleResponseInterface } from '@app/article/types/articleResponse.interface';
 import slugify from 'slugify';
 import { UtilsProvider } from '@app/utils/utils.provider';
+
 @Injectable()
 export class ArticleService {
   constructor(
@@ -26,12 +27,20 @@ export class ArticleService {
       article.tagList = [];
     }
 
-    //FIXME: refactor
     article.slug = this.getSlug(createArticleDto.title);
+
     //! typeorm поймет что  article.author и user имеюют связь, по этому в поле author попадет только айдишник
     article.author = currentUser;
 
     return await this.articleRepository.save(article);
+  }
+
+  async findBySlug(slug: string): Promise<ArticleEntity> {
+    return this.articleRepository
+      .createQueryBuilder('article')
+      .leftJoinAndSelect('article.author', 'author')
+      .where('article.slug = :slug', { slug })
+      .getOne();
   }
 
   buildArticleResponse(article: ArticleEntity): ArticleResponseInterface {
