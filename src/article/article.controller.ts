@@ -4,6 +4,7 @@ import { AuthGuard } from '@app/user/guards/auth.guard';
 import { UserEntity } from '@app/user/user.entity';
 import { User } from '@app/user/decorators/user.decorator';
 import { CreateArticleDto } from '@app/article/dto/createArticle.dto';
+import { ArticleResponseInterface } from '@app/article/types/articleResponse.interface';
 
 @Controller('articles')
 export class ArticleController {
@@ -13,11 +14,12 @@ export class ArticleController {
   async createArticle(
     @User() currentUser: UserEntity,
     @Body('article') createArticleDto: CreateArticleDto,
-  ) {
-    console.log(currentUser);
-    return await this.articleService.createArticle(
+  ): Promise<ArticleResponseInterface> {
+    const article = await this.articleService.createArticle(
       currentUser,
       createArticleDto,
     );
+
+    return this.articleService.buildArticleResponse(article);
   }
 }

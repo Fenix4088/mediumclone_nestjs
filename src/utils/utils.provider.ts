@@ -15,4 +15,8 @@ export class UtilsProvider {
   deepCopy<Obj extends object>(obj: Obj): Obj {
     return JSON.parse(JSON.stringify(obj));
   }
+
+  generateRandomString(): string {
+    return ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
+  }
 }
