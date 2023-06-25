@@ -22,6 +22,7 @@ import { UpdateArticleDto } from '@app/article/dto/updateArticle.dto';
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
   @Post()
+  @UsePipes(new ValidationPipe())
   @UseGuards(AuthGuard)
   async createArticle(
     @User() currentUser: UserEntity,
