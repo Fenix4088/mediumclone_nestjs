@@ -79,4 +79,31 @@ export class ArticleController {
     );
     return this.articleService.buildArticleResponse(article);
   }
+
+  @Post(':slug/favorites')
+  @UseGuards(AuthGuard)
+  async addArticleToFavourites(
+    @Param('slug') slug: string,
+    @User('id') currentUserId: number,
+  ): Promise<ArticleResponseInterface> {
+    const article = await this.articleService.addArticleToFavorites(
+      slug,
+      currentUserId,
+    );
+    return this.articleService.buildArticleResponse(article);
+  }
+
+
+  @Delete(':slug/favorites')
+  @UseGuards(AuthGuard)
+  async removeArticleFromFavorites(
+    @Param('slug') slug: string,
+    @User('id') currentUserId: number,
+  ): Promise<ArticleResponseInterface> {
+    const article = await this.articleService.removeArticleFromFavorites(
+      slug,
+      currentUserId,
+    );
+    return this.articleService.buildArticleResponse(article);
+  }
 }
