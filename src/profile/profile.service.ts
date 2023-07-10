@@ -15,7 +15,10 @@ export class ProfileService {
     private readonly followRepository: Repository<FollowEntity>,
   ) {}
 
-  async getProfile(username: string): Promise<ProfileType> {
+  async getProfile(
+    currentUserId: number,
+    username: string,
+  ): Promise<ProfileType> {
     const profile = await this.userRepository.findOne({
       where: {
         username,
@@ -31,9 +34,16 @@ export class ProfileService {
       throw new HttpException('Profile does not fount', HttpStatus.NOT_FOUND);
     }
 
+    const follow = await this.followRepository.findOne({
+      where: {
+        followerId: currentUserId,
+        followingId: profile.id,
+      },
+    });
+
     return {
       ...profile,
-      following: false,
+      following: Boolean(follow),
     };
   }
 
@@ -79,6 +89,41 @@ export class ProfileService {
     }
 
     return { ...profile, following: true };
+  }
+
+  async unfollowProfile(
+    currentUserId: number,
+    username: string,
+  ): Promise<ProfileType> {
+    const profile = await this.userRepository.findOne({
+      where: {
+        username,
+      },
+      select: {
+        id: true,
+        username: true,
+        bio: true,
+        image: true,
+      },
+    });
+
+    if (!profile) {
+      throw new HttpException('Profile does not fount', HttpStatus.NOT_FOUND);
+    }
+
+    if (currentUserId === profile.id) {
+      throw new HttpException(
+        'Follower and following cant be equal',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    await this.followRepository.delete({
+      followerId: currentUserId,
+      followingId: profile.id,
+    });
+
+    return { ...profile, following: false };
   }
 
   buildProfileResponse(profile: ProfileType): ProfileResponseInterface {
