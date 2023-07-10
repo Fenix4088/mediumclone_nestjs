@@ -16,10 +16,13 @@ export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
   @Get(':username')
   async getProfile(
-    @User('id') currentUserId: string,
+    @User('id') currentUserId: number,
     @Param('username') username: string,
   ): Promise<ProfileResponseInterface> {
-    const profile = await this.profileService.getProfile(currentUserId, username);
+    const profile = await this.profileService.getProfile(
+      currentUserId,
+      username,
+    );
 
     return this.profileService.buildProfileResponse(profile);
   }
