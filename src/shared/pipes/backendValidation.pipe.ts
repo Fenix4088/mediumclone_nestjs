@@ -11,8 +11,12 @@ import { validate } from 'class-validator';
 //! Пример кастомного пайпа, в большинстве случаев можно использовать ValidationPipe из коробки
 export class BackendValidationPipe implements PipeTransform {
   async transform(value: any, metadata: ArgumentMetadata) {
-    console.log('transform', value, metadata);
     const obj = plainToInstance(metadata.metatype, value);
+
+    if (typeof obj !== 'object') {
+      return value;
+    }
+
     const errors = await validate(obj);
     if (!errors.length) return value;
 
