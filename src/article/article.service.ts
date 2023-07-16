@@ -13,6 +13,7 @@ import { FollowEntity } from '@app/profile/follow.entity';
 import { CreateCommentDto } from '@app/article/dto/createComment.dto';
 import { CommentEntity } from '@app/article/comment.entity';
 import { CommentResponseInterface } from '@app/article/types/commentResponse.interface';
+import { MultipleCommentsResponseType } from '@app/article/types/multipleCommentsRespose.type';
 
 @Injectable()
 export class ArticleService {
@@ -286,9 +287,30 @@ export class ArticleService {
     return await this.commentsRepository.save(comment);
   }
 
+  async getMultipleComments(slug: string): Promise<CommentEntity[]> {
+    const article = await this.findBySlug(slug);
+
+    if (!article) {
+      throw new HttpException('Article not found', HttpStatus.NOT_FOUND);
+    }
+
+    const queryBuilder = this.commentsRepository.createQueryBuilder('comments');
+    return queryBuilder
+      .leftJoin('comments.article', 'article')
+      .leftJoinAndSelect('comments.author', 'author')
+      .where('article.slug = :slug', { slug: article.slug })
+      .getMany();
+  }
+
   buildCommentResponse(comment: CommentEntity): CommentResponseInterface {
     const { article, ...restCommentInfo } = comment;
     return { comment: restCommentInfo };
+  }
+
+  buildMultipleCommentResponse(
+    comments: CommentEntity[],
+  ): MultipleCommentsResponseType {
+    return { comments };
   }
   buildArticleResponse(article: ArticleEntity): ArticleResponseInterface {
     return { article };

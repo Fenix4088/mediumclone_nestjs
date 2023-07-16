@@ -22,6 +22,7 @@ import { ArticlesResponseInterface } from '@app/article/types/articlesResponse.i
 import { BackendValidationPipe } from '@app/shared/pipes/backendValidation.pipe';
 import { CreateCommentDto } from '@app/article/dto/createComment.dto';
 import { CommentResponseInterface } from '@app/article/types/commentResponse.interface';
+import { MultipleCommentsResponseType } from '@app/article/types/multipleCommentsRespose.type';
 
 @Controller('articles')
 export class ArticleController {
@@ -131,5 +132,14 @@ export class ArticleController {
     );
 
     return this.articleService.buildCommentResponse(comment);
+  }
+
+  @Get(':slug/comments')
+  async getMultipleComments(
+    @Param('slug') slug: string,
+  ): Promise<MultipleCommentsResponseType> {
+    const comments = await this.articleService.getMultipleComments(slug);
+
+    return this.articleService.buildMultipleCommentResponse(comments);
   }
 }
