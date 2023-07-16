@@ -10,6 +10,9 @@ import { UtilsProvider } from '@app/utils/utils.provider';
 import { UpdateArticleDto } from '@app/article/dto/updateArticle.dto';
 import { ArticlesResponseInterface } from '@app/article/types/articlesResponse.interface';
 import { FollowEntity } from '@app/profile/follow.entity';
+import { CreateCommentDto } from '@app/article/dto/createComment.dto';
+import { CommentEntity } from '@app/article/comment.entity';
+import { CommentResponseInterface } from '@app/article/types/commentResponse.interface';
 
 @Injectable()
 export class ArticleService {
@@ -20,6 +23,8 @@ export class ArticleService {
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(FollowEntity)
     private readonly followRepository: Repository<FollowEntity>,
+    @InjectRepository(CommentEntity)
+    private readonly commentsRepository: Repository<CommentEntity>,
     private readonly utilsProvider: UtilsProvider,
   ) {}
 
@@ -262,6 +267,28 @@ export class ArticleService {
     return article;
   }
 
+  async createComment(
+    slug: string,
+    createCommentDto: CreateCommentDto,
+    currentUser: UserEntity,
+  ): Promise<CommentEntity> {
+    const article = await this.findBySlug(slug);
+
+    if (!article) {
+      throw new HttpException('Article not found', HttpStatus.NOT_FOUND);
+    }
+
+    const comment = new CommentEntity();
+    comment.author = currentUser;
+    comment.article = article;
+    Object.assign(comment, createCommentDto);
+
+    return await this.commentsRepository.save(comment);
+  }
+
+  buildCommentResponse(comment: CommentEntity): CommentResponseInterface {
+    return { comment };
+  }
   buildArticleResponse(article: ArticleEntity): ArticleResponseInterface {
     return { article };
   }

@@ -9,6 +9,8 @@ import {
 } from 'typeorm';
 import { hash } from 'bcrypt';
 import { ArticleEntity } from '../article/article.entity';
+import { CommentEntity } from '../article/comment.entity';
+
 @Entity({ name: 'users' })
 export class UserEntity {
   @PrimaryGeneratedColumn()
@@ -34,8 +36,11 @@ export class UserEntity {
     this.password = await hash(this.password, 10);
   }
 
-  @OneToMany(() => ArticleEntity, (article) => article.author)
+  @OneToMany(() => ArticleEntity, (article) => article.author, { eager: true })
   articles: ArticleEntity[];
+
+  @OneToMany(() => CommentEntity, (comment) => comment.author)
+  comments: CommentEntity[];
 
   @ManyToMany(() => ArticleEntity)
   @JoinTable()

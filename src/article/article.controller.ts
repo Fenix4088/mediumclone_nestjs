@@ -20,6 +20,8 @@ import { ArticleResponseInterface } from '@app/article/types/articleResponse.int
 import { UpdateArticleDto } from '@app/article/dto/updateArticle.dto';
 import { ArticlesResponseInterface } from '@app/article/types/articlesResponse.interface';
 import { BackendValidationPipe } from '@app/shared/pipes/backendValidation.pipe';
+import { CreateCommentDto } from '@app/article/dto/createComment.dto';
+import { CommentResponseInterface } from '@app/article/types/commentResponse.interface';
 
 @Controller('articles')
 export class ArticleController {
@@ -113,5 +115,21 @@ export class ArticleController {
       currentUserId,
     );
     return this.articleService.buildArticleResponse(article);
+  }
+
+  @Post(':slug/comments')
+  @UseGuards(AuthGuard)
+  async createComment(
+    @Param('slug') slug: string,
+    @Body('comment') createCommentDto: CreateCommentDto,
+    @User() currentUser: UserEntity,
+  ): Promise<CommentResponseInterface> {
+    const comment = await this.articleService.createComment(
+      slug,
+      createCommentDto,
+      currentUser,
+    );
+
+    return this.articleService.buildCommentResponse(comment);
   }
 }

@@ -4,9 +4,11 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserEntity } from '../user/user.entity';
+import { CommentEntity } from './comment.entity';
 
 @Entity({ name: 'articles' })
 export class ArticleEntity {
@@ -42,7 +44,10 @@ export class ArticleEntity {
     this.updatedAt = new Date();
   }
 
-  @ManyToOne(() => UserEntity, (user) => user.articles, { eager: true })
+  @OneToMany(() => CommentEntity, (comment) => comment.article)
+  comments: CommentEntity[];
+
+  @ManyToOne(() => UserEntity, (user) => user.articles)
   @JoinColumn({ name: 'author' })
   author: UserEntity;
 }
