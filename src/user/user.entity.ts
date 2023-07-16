@@ -36,7 +36,7 @@ export class UserEntity {
     this.password = await hash(this.password, 10);
   }
 
-  @OneToMany(() => ArticleEntity, (article) => article.author, { eager: true })
+  @OneToMany(() => ArticleEntity, (article) => article.author)
   articles: ArticleEntity[];
 
   @OneToMany(() => CommentEntity, (comment) => comment.author)

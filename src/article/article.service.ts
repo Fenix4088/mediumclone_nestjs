@@ -287,7 +287,8 @@ export class ArticleService {
   }
 
   buildCommentResponse(comment: CommentEntity): CommentResponseInterface {
-    return { comment };
+    const { article, ...restCommentInfo } = comment;
+    return { comment: restCommentInfo };
   }
   buildArticleResponse(article: ArticleEntity): ArticleResponseInterface {
     return { article };

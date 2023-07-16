@@ -20,9 +20,9 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "typeorm-ts-node-commonjs",
     "db:drop": "yarn typeorm schema:drop -- -d src/datasource.ts",
-    "db:generate": "yarn typeorm migration:generate src/migrations/AddedCommentAuthorConnection6 -d src/datasource.ts",
+    "db:generate": "yarn typeorm migration:generate src/migrations/AddedCommentAuthorConnection8 -d src/datasource.ts",
     "db:migrate": "yarn typeorm migration:run -- -d src/datasource.ts",
-    "db:create": "yarn typeorm migration:create src/migrations/AddedCommentAuthorConnection6"
+    "db:create": "yarn typeorm migration:create src/migrations/AddedCommentAuthorConnection8"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
