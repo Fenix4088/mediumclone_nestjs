@@ -23,6 +23,7 @@ import { BackendValidationPipe } from '@app/shared/pipes/backendValidation.pipe'
 import { CreateCommentDto } from '@app/article/dto/createComment.dto';
 import { CommentResponseInterface } from '@app/article/types/commentResponse.interface';
 import { MultipleCommentsResponseType } from '@app/article/types/multipleCommentsRespose.type';
+import { DeleteResult } from 'typeorm';
 
 @Controller('articles')
 export class ArticleController {
@@ -141,5 +142,19 @@ export class ArticleController {
     const comments = await this.articleService.getMultipleComments(slug);
 
     return this.articleService.buildMultipleCommentResponse(comments);
+  }
+
+  @Delete(':slug/comments/:id')
+  @UseGuards(AuthGuard)
+  async deleteComment(
+    @Param('slug') slug: string,
+    @Param('id') commentId: number,
+    @User() currentUser: UserEntity,
+  ): Promise<DeleteResult> {
+    return await this.articleService.deleteComment(
+      slug,
+      commentId,
+      currentUser,
+    );
   }
 }

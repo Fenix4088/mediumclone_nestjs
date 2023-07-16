@@ -302,6 +302,38 @@ export class ArticleService {
       .getMany();
   }
 
+  async deleteComment(
+    slug: string,
+    commentId: number,
+    currentUser: UserEntity,
+  ): Promise<DeleteResult> {
+    const article = await this.findBySlug(slug);
+
+    if (!article) {
+      throw new HttpException('Article not found', HttpStatus.NOT_FOUND);
+    }
+
+    const comment = await this.commentsRepository
+      .createQueryBuilder('comments')
+      .leftJoin('comments.article', 'article')
+      .andWhere('article.slug = :slug', { slug: article.slug })
+      .andWhere('comments.id = :commentId', { commentId })
+      .getOne();
+
+    if (!comment) {
+      throw new HttpException('Comment not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (comment.author !== currentUser || article.id !== currentUser.id) {
+      throw new HttpException(
+        'You have no permissions to delete this comment',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
+    return await this.commentsRepository.delete({ id: commentId });
+  }
+
   buildCommentResponse(comment: CommentEntity): CommentResponseInterface {
     const { article, ...restCommentInfo } = comment;
     return { comment: restCommentInfo };
